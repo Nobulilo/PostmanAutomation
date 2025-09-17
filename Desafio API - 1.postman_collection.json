@@ -1,0 +1,415 @@
+{
+	"info": {
+		"_postman_id": "19dd6cbc-ed91-45ac-b18f-bedf97fdb94a",
+		"name": "Desafio API - 1",
+		"description": "Steps\n\n- Criar um usuário\n    \n- Gerar um token de acesso\n    \n- Confirmar se o usuário criado está autorizado\n    \n- Listar os livros disponíveis\n    \n- Alugar dois livros de livre escolha\n    \n- Listar os detalhes do usuário com os livros escolhidos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21268197",
+		"_collection_link": "https://www.postman.com/arashigames/workspace/desafio-api/collection/21268197-19dd6cbc-ed91-45ac-b18f-bedf97fdb94a?action=share&source=collection_link&creator=21268197"
+	},
+	"item": [
+		{
+			"name": "Create User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"pm.test(\"User created (201)\", function () {\r",
+							"    pm.expect(pm.response.code).to.eql(201);\r",
+							"});\r",
+							"\r",
+							"// Set the UserEmail and UserID on var.\r",
+							"pm.environment.set(\"UserName\", jsonData.username);\r",
+							"pm.environment.set(\"UserID\", jsonData.userID);\r",
+							"console.log(jsonData)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userName\": \"{{$randomEmail}}\",\r\n  \"password\": \"{{UserPass}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ServerURL}}/Account/v1/User",
+					"host": [
+						"{{ServerURL}}"
+					],
+					"path": [
+						"Account",
+						"v1",
+						"User"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"pm.test(\"Token Generated (200)\", function () {\r",
+							"    pm.expect(pm.response.code).to.eql(200);\r",
+							"});\r",
+							"\r",
+							"// Set the Token.\r",
+							"pm.environment.set(\"UserToken\", jsonData.token);\r",
+							"console.log(jsonData)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userName\": \"{{UserName}}\",\r\n  \"password\": \"{{UserPass}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ServerURL}}/Account/v1/GenerateToken",
+					"host": [
+						"{{ServerURL}}"
+					],
+					"path": [
+						"Account",
+						"v1",
+						"GenerateToken"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Authorization",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"pm.test(\"User Authorized (200)\", function () {\r",
+							"    pm.expect(pm.response.code).to.eql(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userName\": \"{{UserName}}\",\r\n  \"password\": \"{{UserPass}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ServerURL}}/Account/v1/Authorized",
+					"host": [
+						"{{ServerURL}}"
+					],
+					"path": [
+						"Account",
+						"v1",
+						"Authorized"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Book Listing",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"let books = jsonData.books;\r",
+							"\r",
+							"// Get the book list and add on array.\r",
+							"pm.test(\"Book Listing Done (200)\", function () {\r",
+							"    pm.expect(Array.isArray(books)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"let total = books.length;\r",
+							"\r",
+							"// Get random number of first book\r",
+							"let index1 = Math.floor(Math.random() * total);\r",
+							"\r",
+							"// I used while just to check if the second number is not equal to the first\r",
+							"let index2;\r",
+							"do {\r",
+							"    index2 = Math.floor(Math.random() * total);\r",
+							"} while (index2 === index1);\r",
+							"\r",
+							"// Get the information from books\r",
+							"let book1 = books[index1];\r",
+							"let book2 = books[index2];\r",
+							"\r",
+							"// Log\r",
+							"console.log(\"Livro 1:\", book1);\r",
+							"console.log(\"Livro 2:\", book2);\r",
+							"\r",
+							"// Store the values of books ID.\r",
+							"pm.environment.set(\"bookIsbn\", book1.isbn);\r",
+							"pm.environment.set(\"bookIsbn2\", book2.isbn);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ServerURL}}/BookStore/v1/Books",
+					"host": [
+						"{{ServerURL}}"
+					],
+					"path": [
+						"BookStore",
+						"v1",
+						"Books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add First Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"First Book Added (201)\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{UserToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userId\": \"{{UserID}}\",\r\n  \"collectionOfIsbns\": [\r\n    {\r\n      \"isbn\": \"{{bookIsbn}}\"\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ServerURL}}/BookStore/v1/Books",
+					"host": [
+						"{{ServerURL}}"
+					],
+					"path": [
+						"BookStore",
+						"v1",
+						"Books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Second Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Second Book Added (201)\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{UserToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userId\": \"{{UserID}}\",\r\n  \"collectionOfIsbns\": [\r\n    {\r\n      \"isbn\": \"{{bookIsbn2}}\"\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ServerURL}}/BookStore/v1/Books",
+					"host": [
+						"{{ServerURL}}"
+					],
+					"path": [
+						"BookStore",
+						"v1",
+						"Books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Books Summary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Show Selected Books (201)\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{UserToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ServerURL}}/Account/v1/User/{{UserID}}",
+					"host": [
+						"{{ServerURL}}"
+					],
+					"path": [
+						"Account",
+						"v1",
+						"User",
+						"{{UserID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ServerURL",
+			"value": ""
+		},
+		{
+			"key": "UserPass",
+			"value": ""
+		}
+	]
+}
