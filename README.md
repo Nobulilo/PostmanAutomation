@@ -4,8 +4,8 @@
 Coleção de testes automatizados para validar endpoints da aplicação https://demoqa.com usando Postman.
 
 ## Conteúdo
-- `collection.json` → Coleção de requisições
-- `environment.json` → Ambiente de variáveis
+- `Desafio API - 1.postman_collection.json` → Coleção de requisições
+- `Desafio-Environment.postman_environment.json` → Ambiente de variáveis
 
 ## Como usar
 1. Abra o Postman
